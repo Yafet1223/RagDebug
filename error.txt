@@ -1,0 +1,59 @@
+ERROR: FastAPI 422 Validation Error
+
+CAUSE:
+Request body does not match expected schema.
+
+FIX:
+Ensure JSON body includes all required fields.
+
+-----------------------------------
+
+ERROR: Python KeyError
+
+CAUSE:
+Dictionary key does not exist.
+
+FIX:
+Check if key exists before accessing dictionary.
+
+-----------------------------------
+
+ERROR: NumPy Shape Mismatch
+
+CAUSE:
+Arrays have incompatible dimensions.
+
+FIX:
+Verify shapes before matrix multiplication.
+
+-----------------------------------
+
+ERROR: React useEffect Infinite Loop
+
+CAUSE:
+Dependency array changes every render.
+
+FIX:
+Avoid unstable dependency references.
+
+-----------------------------------
+
+ERROR: SQLAlchemy DetachedInstanceError
+
+CAUSE:
+Object accessed outside active session.
+
+FIX:
+Reload object or maintain session scope.
+
+-----------------------------------
+
+ERROR: Git Merge Conflict
+
+CAUSE:
+Two branches modified same lines.
+
+FIX:
+Manually resolve conflicting sections.
+
+-----------------------------------
