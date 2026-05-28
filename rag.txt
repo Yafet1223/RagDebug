@@ -1,0 +1,4 @@
+AI does NOT know errors
+YOU supply error knowledge
+RAG retrieves relevant ones
+LLM explains them
