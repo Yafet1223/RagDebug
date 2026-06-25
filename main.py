@@ -1,22 +1,51 @@
-from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacter TextSplitter
-from langchain_google_genai import (
-    GoogleGenerativeAIEmbeddings,
-    ChatGoogleGenerativeAI
+from pathlib import Path
 
-)
-from langchain_community.vectorstores import FAISS
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel
 
-from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+from db import SessionLocal, init_db
+from rag import get_debug_answer
 
-from langchain.chains import RetrievalQA
-GOOGLE_API_KEY = "YOUR_API_KEY"
-loader=TextLoader("error.txt")
-documents=loader.load()
-splitter=RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=50
-)
-docs=splitter.split_documents(documents)
-embeddings
+app = FastAPI(title="RAG Debug Mentor")
+
+BASE_DIR = Path(__file__).resolve().parent
+init_db()
+
+
+class QueryRequest(BaseModel):
+    query: str
+
+
+@app.get("/")
+def index():
+    return FileResponse(BASE_DIR / "templates" / "index.html")
+
+
+@app.get("/styles.css")
+def styles():
+    return FileResponse(BASE_DIR / "static" / "styles.css")
+
+
+@app.get("/health")
+def health():
+    return JSONResponse({"status": "ok"})
+
+
+@app.post("/debug")
+def debug_error(req: QueryRequest):
+    answer = get_debug_answer(req.query)
+
+    if SessionLocal is not None:
+        try:
+            db = SessionLocal()
+            from db import DebugLog
+
+            log = DebugLog(query=req.query, answer=answer)
+            db.add(log)
+            db.commit()
+            db.close()
+        except Exception as exc:  # pragma: no cover - depends on DB availability
+            print(f"Log save skipped: {exc}")
+
+    return {"query": req.query, "answer": answer}

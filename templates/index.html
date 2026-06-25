@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG Debug Mentor</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="card">
+        <h1>RAG Debug Mentor</h1>
+        <p class="subtitle">Describe your error and get a quick debugging suggestion.</p>
+
+        <form id="debug-form">
+          <label for="query">Your error or issue</label>
+          <textarea id="query" name="query" placeholder="Example: FastAPI 422 Validation Error"></textarea>
+          <button type="submit">Analyze</button>
+        </form>
+
+        <div id="status" class="status">Waiting for your error description...</div>
+        <div id="answer" class="answer-box">Your guidance will appear here.</div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('debug-form');
+      const status = document.getElementById('status');
+      const answer = document.getElementById('answer');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const query = document.getElementById('query').value.trim();
+
+        if (!query) {
+          status.textContent = 'Please enter an error description.';
+          answer.textContent = '';
+          return;
+        }
+
+        status.textContent = 'Analyzing your issue...';
+        answer.textContent = 'Working on it...';
+
+        try {
+          const response = await fetch('/debug', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+          });
+
+          const data = await response.json();
+          status.textContent = 'Analysis complete.';
+          answer.innerHTML = `<pre>${data.answer}</pre>`;
+        } catch (error) {
+          status.textContent = 'Request failed.';
+          answer.textContent = 'Please make sure the server is running.';
+        }
+      });
+    </script>
+  </body>
+</html>
